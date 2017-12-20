@@ -1,0 +1,168 @@
+{
+  "name": "genesis_tests",
+  "title": "genesis_tests",
+  "summary": "Runs single variant and aggregate test for genetic data.  Implements Single-variant, Burden, SKAT and SKAT-O tests for Continuous or Dichotomous outcomes. All tests account for familiar relatedness through kinship matrixes.\n\n\nUnderlying functions adapted from:\nConomos MP and Thornton T (2016). GENESIS: GENetic EStimation and Inference in Structured samples (GENESIS): Statistical methods for analyzing genetic data from samples with population structure and/or relatedness. R package version 2.3.4. \n\thttp://bioconductor.org/packages/devel/bioc/html/GENESIS.html\n\thttps://github.com/smgogarten/GENESIS",
+
+  "tags": [
+    "Statistics"
+  ],
+  "dxapi": "1.0.0",
+  "inputSpec": [
+    
+    {
+      "name": "snpinfofile",
+      "label": "Annotation file for filtering variants.  The file should be tab separated and contain the columns 'SNP' ( format 19:12345), 'CHR' (numeric 1-24) and 'POS'.  Other column names can be used for filtering using snp_filter input.",
+      "class": "file",
+      "optional": true,
+      "patterns": [
+        "*.csv",
+        "*.txt",
+        "*.tab",
+        "*.txt.gz",
+        "*.csv.gz"
+      ]
+    },
+    {
+      "name": "genotypefile",
+	"patterns": [
+        "*.gds",
+        "*.GDS"
+      ],
+      "class": "file",
+      "optional": false
+    },
+    {
+      "name": "null_model",
+    "patterns": [
+        "*.Rda",
+        "*.Rdata"
+      ],
+      "class": "file",
+      "optional": false
+    },
+    {
+      "name": "outputfilename",
+      "label": "prefix for output file name, no spaces",
+      "class": "string",
+      "optional": false
+    },
+    {
+      "name": "test_type",
+      "help": "Valid tests are one of the collapsing tests SKAT, Burden or Single",
+      "class": "string",
+      "optional": false
+    },
+    {
+      "name": "test_stat",
+      "help": "Valid tests statistic types are: Score, Wald. Firth can be used with Burden test only. ",
+      "class": "string",
+      "optional": true,
+      "default": "Score"
+    },
+    {
+      "name": "buffer",
+      "help": "Additional flanking region around aggregation start & stop regions. Often used for adding flanking regions to aggregation files based on transcript start and stop.",
+      "class": "int",
+      "optional": true,
+      "default": 0
+    },
+    {
+      "name": "genefile",
+      "help": "File contains the start and stop positions for aggregating variants into region-based tests.  File must contain 3 required columns labeled 'start', 'stop' and 'CHR'. start and stop must be numeric.  CHR must be in the form of 'chr#'.  (adv note. If this file is provided for single-snp tests it will parallelize based on the start-stop chunks and can be used to filter to a subset of the chromosome in combination with gene_filter)",
+      "class": "file",
+      "optional": true
+    },
+    {
+      "name": "varaggfile",
+      "help": "File contains lists of variants that should be aggregated into groups.  File should be a CSV file with the headers: group_id, chromosome, position, ref and alt.  All variants for with the same group_id will be combined into a single aggregate tests.  Use of this option overrides any the genefile, snpinfofile, snpfilter and genefilter options.",
+      "class": "file",
+      "optional": true
+    },
+    {
+      "name": "snp_filter",
+      "help": "Filter the annotation file.  Can filter based on the annotation column names using R syntax (e.g. CADD_phred_score > 10 | function %in% ('nonsynonymous','splice','stoploss','stopgain')) , where 'CADD_phred_score' and 'function' are column names in annotation file.",
+      "class": "string",
+      "optional": true,
+      "default": "TRUE"
+    },
+    {
+      "name": "gene_filter",
+      "help": "Filter the aggregation file.  Can filter based on the gene column names using R syntax (e.g. start > 1e6 & stop < 1e7) or (name %in% c('IL2','IL17R'), where 'name', 'start' and 'stop' are column names in aggregation file.",
+      "class": "string",
+      "optional": true,
+      "default": "TRUE"
+    },
+    {
+      "name": "min_mac",
+      "help": "Minimum minor allele count for threshold ( only used for single variant tests )",
+      "class": "int",
+      "optional": true,
+      "default": 5
+    },
+    {
+      "name": "top_maf",
+      "help": "Maximim minor allele frequency ( generally used for aggregate tests )",
+      "class": "float",
+      "optional": true,
+      "default": 1
+    },
+    {
+      "name": "weights",
+      "help": "beta weights set to flat weights (e.g. set to 'c(1,25)' for Wu weights or 'c(0.5,0.5)' for Madsen-Browning weights)",
+      "class": "string",
+      "optional": true,
+      "default": "c(1,1)"
+    },
+    {
+      "default": 30,
+      "optional": false,
+      "name": "user_cores",
+      "class": "int"
+    },
+    {
+      "name": "debug",
+      "class": "int",
+      "optional": true,
+      "default": 0
+    }
+  ],
+  "outputSpec": [
+    {
+      "name": "results",
+      "class": "file"
+    }
+  ],
+  "runSpec": {
+    "execDepends": [
+      {
+        "name": "libxml2-dev"
+      }
+    ],
+    "bundledDependsByRegion": {
+      "aws:us-east-1": [
+        {
+          "name": "resources.tar.gz",
+          "id": {
+            "$dnanexus_link": "file-Byb88K00Q19bQ7J9g0854PY1"
+          }
+        }
+      ]
+    },
+    "systemRequirements": {
+      "main": {
+        "instanceType": "mem3_ssd1_x32"
+      }
+    },
+    "file": "src/code.sh",
+    "release": "14.04",
+    "interpreter": "bash",
+    "distribution": "Ubuntu"
+  },
+  "access": {
+    "project": "CONTRIBUTE",
+    "allProjects": "CONTRIBUTE",
+    "network": [
+      "*"
+    ]
+  }
+}
